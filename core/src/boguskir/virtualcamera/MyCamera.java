@@ -10,6 +10,7 @@ import javafx.scene.shape.Line;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.MathUtils;
@@ -32,20 +33,14 @@ public class MyCamera {
 	public Vector3 paneA;
 	public Vector3 paneB;
 	public Vector3 paneC;
-	// public Vector3 paneD;
-
-	//public Vector3 paneAB;
 
 	public Vector3 paneAC;
 
 
-
-	// to do: make paneDist dependent on it
-	private float fov = 90f;
-
 	// katy skierowania kamery
 	private float angleW;
 	private float angleH;
+	public float angleZ;
 
 	private float moveSpeed = 1f;
 
@@ -60,6 +55,7 @@ public class MyCamera {
 		pos = new Vector3(0, 0, 0);
 		angleW = 90f;
 		angleH = 0;
+		angleZ = 0;
 
 //		paneA = new Vector3(-paneWidth / 2, -paneHeight, paneDist);
 //		paneB = new Vector3(paneWidth / 2, -paneHeight, paneDist);
@@ -68,22 +64,8 @@ public class MyCamera {
 //
 //		//paneAB = new Vector3(-paneWidth / 2, -paneHeight, paneDist / 2);
 //		paneAC = new Vector3(-paneWidth / 2, 0, paneDist / 2);
-
-//		for (int i = 0; i < 100; i++)
-//			moveBack();
-//		for (int i = 0; i < 50; i++)
-//			moveUp();
-
-		
-		
+	
 		update();
-
-		
-		// TODO: zrob ogniskowa i fov potem update pane na podstawie pos i
-		// oblicznie nowych pozyci
-
-		//
-
 	}
 	
 	public void update(){
@@ -110,7 +92,7 @@ public class MyCamera {
 		paneC = StoC(paneC).add(posCX);
 		
 		
-		System.out.println((posAX));
+	//	System.out.println((posAX));
 //		paneAB = new Vector3(50, -angleH ,180+angleW );
 //		paneAB = StoC(paneAB).add(paneA);
 		
@@ -124,9 +106,23 @@ public class MyCamera {
 	//	System.out.println(StoC(new Vector3(10,angleH,135)));
 		
 		
-		
+		// Z
+//		Zcenter = paneB.cpy().add(paneC.cpy()).scl(0.5f);
+//		// System.out.println(Zcenter);
+//
+//		Vector3 tmp = new Vector3(Zcenter.dst(paneA), angleZ + 209.35775f, angleW - 90);
+//		paneA = StoC(tmp).add(Zcenter);
+//		
+//		
+//
+//		tmp = new Vector3(Zcenter.dst(paneB), angleZ + 330.64225f, angleW - 90);
+//		paneB = StoC(tmp).add(Zcenter);
+//
+//		tmp = new Vector3(Zcenter.dst(paneC), angleZ + 150.64225f, angleW - 90);
+//		paneC = StoC(tmp).add(Zcenter);
+//		
 	}
-
+	//public Vector3 Zcenter ;
 	
 	private float FOV = 90;
 	private float F = 50;
@@ -142,6 +138,11 @@ public class MyCamera {
 	public void rotateH(float rotation) {
 		double  r = (rotation * 180f / Math.PI);
 		angleH += r;
+	}
+	
+	public void rotateZ(float rotation) {
+		double  r = (rotation * 180f / Math.PI);
+		angleZ += r;
 	}
 
 	// zamienia punkty ze swiata na procentowe polozenie na plaszczyznie (pane)
@@ -215,8 +216,6 @@ public class MyCamera {
 
 	}
 
-
-
 	public Vector2[] transformLine(Vector3 pointA, Vector3 pointB, ShapeRenderer s) {
 
 		Vector2[] ret = new Vector2[4];
@@ -235,8 +234,6 @@ public class MyCamera {
 	int i = 0;
 
 	
-
-
 	
 	private float sin(float dec){
 		return MathUtils.sinDeg(dec);
@@ -245,18 +242,12 @@ public class MyCamera {
 		return MathUtils.cosDeg(dec);
 	}
 
-	// obraca p wzgledem o, o theta stopni
-	public Vector2 rotate2D(float px, float py, float ox, float oy, float theta) {
 
-		float x = (float) (Math.cos(theta) * (px - ox) - Math.sin(theta)
-				* (py - oy) + ox);
-		float y = (float) (Math.sin(theta) * (px - ox) + Math.cos(theta)
-				* (py - oy) + oy);
-		return new Vector2(x, y);
-	}
-
-	// TODO add rest of movement look up down and barrel roll
-	public void handleInput(WorldRepository world) {
+	public void handleInput(WorldRepository world, OrthographicCamera cam) {
+		
+		
+		/// rotate /////////////////////
+		
 		if (Gdx.input.isKeyPressed(Input.Keys.E)) {
 
 			this.rotateW(-0.03f);
@@ -280,6 +271,19 @@ public class MyCamera {
 			this.rotateH(0.03f);
 			
 		}
+		if (Gdx.input.isKeyPressed(Input.Keys.O)) {
+			cam.rotate(-1, 0, 0, 1);
+			angleZ-=1;
+			
+		}
+		if (Gdx.input.isKeyPressed(Input.Keys.P)) {
+			cam.rotate(1, 0, 0, 1);
+			angleZ+=1;
+		}
+	//	System.out.println(angleZ);
+		
+		
+		/////////////////
 
 		if (Gdx.input.isKeyPressed(Input.Keys.W)) {
 
@@ -334,47 +338,46 @@ public class MyCamera {
 
 
 	public void moveForward() {
-
-		Vector2 tmp = new Vector2(moveSpeed, 0).rotate(angleW);
-
-		pos = pos.add(tmp.x, 0, tmp.y);
-
+		Vector3 dir = new Vector3(moveSpeed,angleH,angleW);
+		pos = StoC(dir).add(pos);
 	}
 
 	public void moveBack() {
 
-		Vector2 tmp = new Vector2(-moveSpeed, 0).rotate(angleW);
-
-		pos = pos.add(tmp.x, 0, tmp.y);
+		Vector3 dir = new Vector3(moveSpeed,180+angleH,angleW);
+		pos = StoC(dir).add(pos);
 
 	}
 
 	public void moveLeft() {
 
-		Vector2 tmp = new Vector2(-moveSpeed, 0).rotate(angleW - 90);
-
-		pos = pos.add(tmp.x, 0, tmp.y);
+		Vector3 dir = new Vector3(moveSpeed,angleZ,angleW+90);
+		pos = pos.sub(StoC(dir));
 
 	}
 
 	public void moveRight() {
 
-		Vector2 tmp = new Vector2(-moveSpeed, 0).rotate(angleW + 90);
-
-		pos = pos.add(tmp.x, 0, tmp.y);
+		Vector3 dir = new Vector3(moveSpeed,angleZ,angleW+90);
+		pos = StoC(dir).add(pos);
 
 	}
 
 	// todo: corelate to angleH, temporaty solution
 	public void moveUp() {
-
-		pos = pos.add(0, moveSpeed, 0);
+		Vector3 dir = new Vector3(moveSpeed,angleZ+90,angleW-90);
+		dir = StoC(dir);
+		dir.x = -dir.x;
+		dir.z = -dir.z;
+		pos = pos.sub(dir);
 	}
 
 	public void moveDown() {
-
-		pos = pos.add(0, -moveSpeed, 0);
-
+		Vector3 dir = new Vector3(moveSpeed,angleZ-90,angleW-90);
+		dir = StoC(dir);
+		dir.x = -dir.x;
+		dir.z = -dir.z;
+		pos = pos.sub(dir);
 	}
 
 

@@ -35,8 +35,9 @@ public class VirtualCamera extends ApplicationAdapter {
 
 		cam = new OrthographicCamera(W, H);
 		cam.position.set(0, 0, 0);
+		
 		cam.update();
-
+		
 		
 		batch = new SpriteBatch();
 		font = new BitmapFont();
@@ -85,14 +86,20 @@ public class VirtualCamera extends ApplicationAdapter {
 //		shapeRenderer.circle(myCam.paneAB.x,myCam.paneAB.z, 4);
 		
 		shapeRenderer.setColor(Color.PURPLE);
-		shapeRenderer.line(myCam.posAX.x,myCam.posAX.z, myCam.paneA.x, myCam.paneA.z);
-		shapeRenderer.circle(myCam.posAX.x,myCam.posAX.z, 3);
+	//	shapeRenderer.line(myCam.posAX.x,myCam.posAX.z, myCam.paneA.x, myCam.paneA.z);
+	//	shapeRenderer.circle(myCam.posAX.x,myCam.posAX.z, 3);
 		shapeRenderer.circle(myCam.paneA.x, myCam.paneA.z, 3);
 		shapeRenderer.setColor(Color.GREEN);
-		shapeRenderer.line(myCam.posBX.x,myCam.posBX.z, myCam.paneB.x, myCam.paneB.z);
+	//	shapeRenderer.line(myCam.posBX.x,myCam.posBX.z, myCam.paneB.x, myCam.paneB.z);
 		
-		shapeRenderer.circle(myCam.posBX.x,myCam.posBX.z, 3);
+	//	shapeRenderer.circle(myCam.posBX.x,myCam.posBX.z, 3);
 		shapeRenderer.circle(myCam.paneB.x, myCam.paneB.z, 3);
+		shapeRenderer.setColor(Color.YELLOW);
+		shapeRenderer.circle(myCam.paneC.x,myCam.paneC.z,3);
+		shapeRenderer.line(myCam.paneB.x, myCam.paneB.z,myCam.paneC.x,myCam.paneC.z);
+		
+		shapeRenderer.setColor(Color.SALMON);
+//		shapeRenderer.circle(myCam.Zcenter.x,myCam.Zcenter.z,4);
 		// end cam
 		
 		
@@ -150,6 +157,7 @@ public class VirtualCamera extends ApplicationAdapter {
 	    font.draw(batch,"Camera pos: ["+(int)myCam.pos.x+", "+(int)myCam.pos.y+", "+(int)myCam.pos.z+"]", 10, H-30);
 	    font.draw(batch,"angle W: "+(int)myCam.getAngleW()+"'", 10, H-50);
 	    font.draw(batch,"angle H: "+(int)myCam.getAngleH()+"'", 10, H-70);
+	    font.draw(batch,"angle Z: "+(int)myCam.angleZ+"'", 10, H-90);
 
 	    batch.end();
 
@@ -166,19 +174,14 @@ public class VirtualCamera extends ApplicationAdapter {
 	private void handleInput() {
 
 		// rotate
-		if (Gdx.input.isKeyPressed(Input.Keys.O)) {
-			cam.rotate(-1, 0, 0, 1);
-		}
-		if (Gdx.input.isKeyPressed(Input.Keys.P)) {
-			cam.rotate(1, 0, 0, 1);
-		}
+		
 		if (Gdx.input.isKeyPressed(Input.Keys.K)) {
 			cam.zoom += 0.03;
 		}
 		if (Gdx.input.isKeyPressed(Input.Keys.L)) {
 			cam.zoom -= 0.03;
 		}
-		myCam.handleInput(_worldRepo);
+		myCam.handleInput(_worldRepo,cam);
 
 	}
 }
