@@ -48,11 +48,11 @@ public class MyCamera {
 	private Vector3 posCX;
 
 	// k¹t widzenia i ogniskowa
-	private float FOV = 90;
+	float FOV = 90;
 	private float F = 50;
 
 	// szybkoœæ poruszania siê kamery
-	private float moveSpeed = 1f;
+	private float moveSpeed = 3f;
 
 	
 	public MyCamera() {
@@ -67,23 +67,23 @@ public class MyCamera {
 	
 	public void update() {
 		float d = F / cos(FOV / 2);
-
+		
 		posAX = new Vector3(cos(90 - FOV / 2f) * d,	 0, angleW + 90);
 		posAX = StoC(posAX).add(pos);
 
-		paneA = new Vector3(d, angleH - FOV / 2 * 9 / 16f, angleW);
+		paneA = new Vector3(F, angleH - FOV / 2 * 9 / 16f, angleW);
 		paneA = StoC(paneA).add(posAX);
 
 		posBX = new Vector3(cos(90 - FOV / 2f) * d, 0, angleW - 90);
 		posBX = StoC(posBX).add(pos);
 
-		paneB = new Vector3(d, angleH - FOV / 2 * 9 / 16f, angleW);
+		paneB = new Vector3(F, angleH - FOV / 2 * 9 / 16f, angleW);
 		paneB = StoC(paneB).add(posBX);
 
 		posCX = new Vector3(cos(90 - FOV / 2f) * d, 0, angleW + 90);
 		posCX = StoC(posCX).add(pos);
 
-		paneC = new Vector3(d, angleH + FOV / 2 * 9 / 16f, angleW);
+		paneC = new Vector3(F, angleH + FOV / 2 * 9 / 16f, angleW);
 		paneC = StoC(paneC).add(posCX);
 
 		paneAC = new Vector3(50, -angleH, 180 + angleW);
@@ -257,10 +257,29 @@ public class MyCamera {
 
 			
 			FOV-=0.5f;
+			
 		}
 		if (Gdx.input.isKeyPressed(Input.Keys.B)) {
 
 			FOV+=0.5f;
+			
+		}	
+		
+		if (Gdx.input.isKeyPressed(Input.Keys.H)) {
+
+			cam.translate(10, 0);
+		}	
+		if (Gdx.input.isKeyPressed(Input.Keys.J)) {
+
+			cam.translate(-10, 0);
+		}
+		if (Gdx.input.isKeyPressed(Input.Keys.N)) {
+
+			cam.translate(0, 10);
+		}	
+		if (Gdx.input.isKeyPressed(Input.Keys.M)) {
+
+			cam.translate(0, -10);
 		}	
 		cam.update();
 
@@ -335,27 +354,9 @@ public class MyCamera {
 		x = -x;
 		y = -y;
 
-		//System.out.println((int) (p.z) + "  " + (int) x + "\t" + (int) y + "\t" + (int) z);
 		return new Vector3(x, z, y);
 	}
 	
-
-//	public Vector3 StoCLineRot(Vector3 p) {
-//
-//		float x = p.x * sin(p.y - 90) * cos(angleW);
-//		float y = p.x * sin(p.y - 90) * sin(angleW);
-//		float z = p.x * cos(p.y - 90);
-//
-//		x = -x;
-//		y = -y;
-//
-//		x+= p.x * sin(0) * cos()
-//		p.rotate(degrees, axisX, axisY, axisZ);
-//		
-//		//System.out.println((int) (p.z) + "  " + (int) x + "\t" + (int) y + "\t" + (int) z);
-//		return new Vector3(x, z, y);
-//	}
-//	
 	public Vector3 CtoS(Vector3 p) {
 
 		float r = p.len();

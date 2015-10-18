@@ -24,9 +24,10 @@ public class MyRectangle {
 
 		s.setColor(Color.BLUE);
 		for (Vector3 p : points) {
-			s.circle(p.x, p.z, 10);
+			s.circle(-p.x, p.z, 10);
 		}
 
+		s.setColor(Color.BLACK);
 	}
 
 	public void draw3D(ShapeRenderer s, MyCamera myCam, float W, float H) {
