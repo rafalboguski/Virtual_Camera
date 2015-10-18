@@ -18,8 +18,8 @@ public class WorldRepository {
 		addBlock(new Vector3(-150, -50, 320), 190);
 		
 		addBlock(new Vector3(-100, -50, 400), 100);
-		addBlock(new Vector3(0, -50, 500), 250);
-		addBlock(new Vector3(100, -50, 400), 190);
+		addBlock(new Vector3(0,    -50, 500), 250);
+		addBlock(new Vector3(100,  -50, 400), 190);
 
 		addBlock(new Vector3(150, -50, 100), 150);
 		addBlock(new Vector3(150, -50, 200), 250);

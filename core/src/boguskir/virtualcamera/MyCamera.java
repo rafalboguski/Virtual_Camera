@@ -30,26 +30,31 @@ public class MyCamera {
 	// punkt centralny
 	public Vector3 pos;
 
+	// punkty plaszczyzny kamery
 	public Vector3 paneA;
 	public Vector3 paneB;
 	public Vector3 paneC;
-
 	public Vector3 paneAC;
 
 
 	// katy skierowania kamery
 	private float angleW;
 	private float angleH;
-	public float angleZ;
+	private float angleZ;
 
-	private float moveSpeed = 1f;
-
-	public Vector3 posAX;
-
-	public Vector3 posBX;
-
+	// punkty pomocnicze do obrotów 
+	private Vector3 posAX;
+	private Vector3 posBX;
 	private Vector3 posCX;
 
+	// k¹t widzenia i ogniskowa
+	private float FOV = 90;
+	private float F = 50;
+
+	// szybkoœæ poruszania siê kamery
+	private float moveSpeed = 1f;
+
+	
 	public MyCamera() {
 
 		pos = new Vector3(0, 0, 0);
@@ -57,87 +62,55 @@ public class MyCamera {
 		angleH = 0;
 		angleZ = 0;
 
-//		paneA = new Vector3(-paneWidth / 2, -paneHeight, paneDist);
-//		paneB = new Vector3(paneWidth / 2, -paneHeight, paneDist);
-//		paneC = new Vector3(-paneWidth / 2, paneHeight, paneDist);
-//		// paneD = new Vector3(paneWidth / 2, paneHeight, paneDist);
-//
-//		//paneAB = new Vector3(-paneWidth / 2, -paneHeight, paneDist / 2);
-//		paneAC = new Vector3(-paneWidth / 2, 0, paneDist / 2);
-	
 		update();
 	}
 	
-	public void update(){
+	public void update() {
 		float d = F / cos(FOV / 2);
-		
-		posAX = new Vector3(cos(90-FOV/2f)*d, 0,angleW + 90);
+
+		posAX = new Vector3(cos(90 - FOV / 2f) * d,	 0, angleW + 90);
 		posAX = StoC(posAX).add(pos);
-		
-		paneA = new Vector3(d, angleH - FOV/2 *9/16f,angleW );
+
+		paneA = new Vector3(d, angleH - FOV / 2 * 9 / 16f, angleW);
 		paneA = StoC(paneA).add(posAX);
-		
-		
-		posBX = new Vector3(cos(90-FOV/2f)*d, 0,angleW - 90);
+
+		posBX = new Vector3(cos(90 - FOV / 2f) * d, 0, angleW - 90);
 		posBX = StoC(posBX).add(pos);
-		
-		paneB = new Vector3(d, angleH - FOV/2 *9/16f ,angleW );
+
+		paneB = new Vector3(d, angleH - FOV / 2 * 9 / 16f, angleW);
 		paneB = StoC(paneB).add(posBX);
-		
-		
-		posCX = new Vector3(cos(90-FOV/2f)*d, 0,angleW + 90);
+
+		posCX = new Vector3(cos(90 - FOV / 2f) * d, 0, angleW + 90);
 		posCX = StoC(posCX).add(pos);
-		
-		paneC = new Vector3(d, angleH + FOV/2 *9/16f,angleW);
+
+		paneC = new Vector3(d, angleH + FOV / 2 * 9 / 16f, angleW);
 		paneC = StoC(paneC).add(posCX);
-		
-		
-	//	System.out.println((posAX));
-//		paneAB = new Vector3(50, -angleH ,180+angleW );
-//		paneAB = StoC(paneAB).add(paneA);
-		
-		
-//		
-		paneAC = new Vector3(50, -angleH ,180+angleW );
+
+		paneAC = new Vector3(50, -angleH, 180 + angleW);
 		paneAC = StoC(paneAC).add(pos);
-		//System.out.println(paneA.y +" "+(-angleH)+" "+paneC.y+" "+paneAC.y) ;
 
-		// TODO zjebane to jest napraw
-	//	System.out.println(StoC(new Vector3(10,angleH,135)));
-		
-		
-		// Z
-//		Zcenter = paneB.cpy().add(paneC.cpy()).scl(0.5f);
-//		// System.out.println(Zcenter);
-//
-//		Vector3 tmp = new Vector3(Zcenter.dst(paneA), angleZ + 209.35775f, angleW - 90);
-//		paneA = StoC(tmp).add(Zcenter);
-//		
-//		
-//
-//		tmp = new Vector3(Zcenter.dst(paneB), angleZ + 330.64225f, angleW - 90);
-//		paneB = StoC(tmp).add(Zcenter);
-//
-//		tmp = new Vector3(Zcenter.dst(paneC), angleZ + 150.64225f, angleW - 90);
-//		paneC = StoC(tmp).add(Zcenter);
-//		
 	}
-	//public Vector3 Zcenter ;
+
 	
-	private float FOV = 90;
-	private float F = 50;
 	
-	// rotacja w plaszczyznie wertykalnej
 	public void rotateW(float rotation) {
-		
-		double  r = (rotation * 180f / Math.PI);
-		angleW += r;
+
+		double r = (rotation * 180f / Math.PI);
+
+		Vector2 dir = new Vector2((float) -r, 0).rotate(angleZ);
+
+		angleW += dir.x;
+		angleH += dir.y;
 
 	}
-	
+
 	public void rotateH(float rotation) {
-		double  r = (rotation * 180f / Math.PI);
-		angleH += r;
+		double r = (rotation * 180f / Math.PI);
+
+		Vector2 dir = new Vector2((float) -r, 0).rotate(angleZ+90);
+
+		angleW += dir.x;
+		angleH += dir.y;
 	}
 	
 	public void rotateZ(float rotation) {
@@ -145,49 +118,8 @@ public class MyCamera {
 		angleZ += r;
 	}
 
-	// zamienia punkty ze swiata na procentowe polozenie na plaszczyznie (pane)
-	public Vector2[] transformWorldToPane2(Vector3 point, ShapeRenderer s) {
-
 	
-		Plane plane = new Plane(paneA, paneB, paneC);
-		Vector3 inter = new Vector3();
-
-		Intersector.intersectLinePlane(
-				pos.x, 		pos.y, 		pos.z, 
-				point.x, 	point.y,	point.z, 
-				plane, inter);
-		
-		Plane pozioma = new Plane(paneA, paneAC, paneB);
-		float distH = -pozioma.distance(inter);
-		
-	
-		Plane pionowa = new Plane(paneA, paneAC, paneC);
-		float distW = -pionowa.distance(inter);
-		
-		
-		Vector3 A = new Vector3(paneA.x - pos.x, paneA.z - pos.z, paneA.y - pos.y);
-		A = CtoS(A);
-		Vector3 I = new Vector3(inter.x - pos.x, inter.z - pos.z, inter.y - pos.y);
-		I = CtoS(I);
-
-		distW = (-I.z + A.z) / FOV;
-		
-		distH = (-I.y + A.y) / (FOV*9/16f);
-		
-		
-
-		return new Vector2[] {
-				(point.dst(pos) > point.dst(inter)) ? 
-							new Vector2(
-									distW , 
-									distH )
-						
-						: null,
-				new Vector2(inter.x, inter.z) };
-
-	}
-	
-	public Vector2[] transformWorldToPane(Vector3 point, ShapeRenderer s) {
+	public Vector2[] transformWorldToPane(Vector3 point) {
 
 		
 		Plane plane = new Plane(paneA, paneB, paneC);
@@ -216,12 +148,12 @@ public class MyCamera {
 
 	}
 
-	public Vector2[] transformLine(Vector3 pointA, Vector3 pointB, ShapeRenderer s) {
+	public Vector2[] transformLine(Vector3 pointA, Vector3 pointB) {
 
 		Vector2[] ret = new Vector2[4];
 
-		Vector2[] A = transformWorldToPane(pointA,s);
-		Vector2[] B = transformWorldToPane(pointB,s);
+		Vector2[] A = transformWorldToPane(pointA);
+		Vector2[] B = transformWorldToPane(pointB);
 
 		ret[0] = A[0];
 		ret[1] = B[0];
@@ -231,10 +163,7 @@ public class MyCamera {
 
 	}
 
-	int i = 0;
 
-	
-	
 	private float sin(float dec){
 		return MathUtils.sinDeg(dec);
 	}
@@ -245,9 +174,7 @@ public class MyCamera {
 
 	public void handleInput(WorldRepository world, OrthographicCamera cam) {
 		
-		
-		/// rotate /////////////////////
-		
+
 		if (Gdx.input.isKeyPressed(Input.Keys.E)) {
 
 			this.rotateW(-0.03f);
@@ -261,30 +188,32 @@ public class MyCamera {
 
 		if (Gdx.input.isKeyPressed(Input.Keys.Z)) {
 
-			if(angleH>-(90-FOV/2*9/16f))
+			
 			this.rotateH(-0.03f);
 			
 		}
 		if (Gdx.input.isKeyPressed(Input.Keys.X)) {
 
-			if(angleH<(90-FOV/2*9/16f))
+			
 			this.rotateH(0.03f);
 			
 		}
-		if (Gdx.input.isKeyPressed(Input.Keys.O)) {
+		if (Gdx.input.isKeyPressed(Input.Keys.P)) {
 			cam.rotate(-1, 0, 0, 1);
 			angleZ-=1;
 			
 		}
-		if (Gdx.input.isKeyPressed(Input.Keys.P)) {
+		if (Gdx.input.isKeyPressed(Input.Keys.O)) {
 			cam.rotate(1, 0, 0, 1);
 			angleZ+=1;
 		}
-	//	System.out.println(angleZ);
-		
-		
-		/////////////////
-
+		if (Gdx.input.isKeyPressed(Input.Keys.K)) {
+			cam.zoom += 0.03;
+		}
+		if (Gdx.input.isKeyPressed(Input.Keys.L)) {
+			cam.zoom -= 0.03;
+		}
+	
 		if (Gdx.input.isKeyPressed(Input.Keys.W)) {
 
 			this.moveForward();
@@ -333,6 +262,7 @@ public class MyCamera {
 
 			FOV+=0.5f;
 		}	
+		cam.update();
 
 	}
 
@@ -389,6 +319,10 @@ public class MyCamera {
 
 	public float getAngleH() {
 		return angleH;
+	}
+	
+	public float getAngleZ() {
+		return angleZ;
 	}
 	
 	// p.y <-90,90>
