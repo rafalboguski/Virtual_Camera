@@ -1,40 +1,25 @@
 package boguskir.virtualcamera;
 
 
-import java.awt.Point;
-import java.util.ArrayList;
-
-import javafx.geometry.Point3D;
-import javafx.scene.shape.Line;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Plane;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.math.collision.Ray;
-import com.badlogic.gdx.math.collision.Segment;
-import com.sun.javafx.geom.Vec2d;
-import com.sun.javafx.geom.Vec2f;
-import com.sun.javafx.geom.Vec3f;
-import com.sun.org.apache.bcel.internal.generic.IDIV;
 
 public class MyCamera {
 
 	// punkt centralny
-	public Vector3 pos;
+	public static Vector3 pos;
 
 	// punkty plaszczyzny kamery
-	public Vector3 paneA;
-	public Vector3 paneB;
-	public Vector3 paneC;
-	public Vector3 paneAC;
+	public Vector3 paneA = new Vector3();
+	public Vector3 paneB = new Vector3();
+	public Vector3 paneC = new Vector3();
+	public Vector3 paneAC = new Vector3();
 
 
 	// katy skierowania kamery
@@ -43,13 +28,13 @@ public class MyCamera {
 	private float angleZ;
 
 	// punkty pomocnicze do obrotów 
-	private Vector3 posAX;
-	private Vector3 posBX;
-	private Vector3 posCX;
+	private Vector3 posAX = new Vector3();
+	private Vector3 posBX = new Vector3();
+	private Vector3 posCX = new Vector3();
 
 	// k¹t widzenia i ogniskowa
 	float FOV = 90;
-	private float F = 50;
+	float F = 50;
 
 	// szybkoœæ poruszania siê kamery
 	private float moveSpeed = 3f;
@@ -68,26 +53,26 @@ public class MyCamera {
 	public void update() {
 		float d = F / cos(FOV / 2);
 		
-		posAX = new Vector3(cos(90 - FOV / 2f) * d,	 0, angleW + 90);
-		posAX = StoC(posAX).add(pos);
+		posAX.set(cos(90 - FOV / 2f) * d,	 0, angleW + 90);
+		posAX.set(StoC(posAX).add(pos));
 
-		paneA = new Vector3(F, angleH - FOV / 2 * 9 / 16f, angleW);
-		paneA = StoC(paneA).add(posAX);
+		paneA.set(F, angleH - FOV / 2 * 9 / 16f, angleW);
+		paneA.set(StoC(paneA).add(posAX));
 
-		posBX = new Vector3(cos(90 - FOV / 2f) * d, 0, angleW - 90);
-		posBX = StoC(posBX).add(pos);
+		posBX.set(cos(90 - FOV / 2f) * d, 0, angleW - 90);
+		posBX.set(StoC(posBX).add(pos));
 
-		paneB = new Vector3(F, angleH - FOV / 2 * 9 / 16f, angleW);
-		paneB = StoC(paneB).add(posBX);
+		paneB.set(F, angleH - FOV / 2 * 9 / 16f, angleW);
+		paneB.set(StoC(paneB).add(posBX));
 
-		posCX = new Vector3(cos(90 - FOV / 2f) * d, 0, angleW + 90);
-		posCX = StoC(posCX).add(pos);
+		posCX.set(cos(90 - FOV / 2f) * d, 0, angleW + 90);
+		posCX.set(StoC(posCX).add(pos));
 
-		paneC = new Vector3(F, angleH + FOV / 2 * 9 / 16f, angleW);
-		paneC = StoC(paneC).add(posCX);
+		paneC.set(F, angleH + FOV / 2 * 9 / 16f, angleW);
+		paneC.set(StoC(paneC).add(posCX));
 
-		paneAC = new Vector3(50, -angleH, 180 + angleW);
-		paneAC = StoC(paneAC).add(pos);
+		paneAC.set(50, -angleH, 180 + angleW);
+		paneAC.set(StoC(paneAC).add(pos));
 
 	}
 
@@ -121,7 +106,7 @@ public class MyCamera {
 	
 	public Vector2[] transformWorldToPane(Vector3 point) {
 
-		
+		// plaszczyzna kamery
 		Plane plane = new Plane(paneA, paneB, paneC);
 		Vector3 inter = new Vector3();
 
@@ -130,12 +115,14 @@ public class MyCamera {
 				point.x, 	point.y,	point.z, 
 				plane, inter);
 		
-		Plane pozioma = new Plane(paneA, paneAC, paneB);
-		float distH = -pozioma.distance(inter);
+		// plaszczyzna pozioma
+		plane.set(paneA, paneAC, paneB);
+		float distH = -plane.distance(inter);
 		
 	
-		Plane pionowa = new Plane(paneA, paneAC, paneC);
-		float distW = -pionowa.distance(inter);
+		// plaszczyzna pionowa
+		plane.set(paneA, paneAC, paneC);
+		float distW = -plane.distance(inter);
 
 		return new Vector2[] {
 				(point.dst(pos) > point.dst(inter)) ? 
@@ -351,19 +338,13 @@ public class MyCamera {
 		float y = p.x * sin(p.y - 90) * sin(p.z);
 		float z = p.x * cos(p.y - 90);
 
-		x = -x;
-		y = -y;
-
-		return new Vector3(x, z, y);
+		return new Vector3(-x, z, -y);
 	}
 	
 	public Vector3 CtoS(Vector3 p) {
 
 		float r = p.len();
-		float alfa = (float) Math.toDegrees( 
-					Math.atan(p.y/p.x)
-				);
-
+		float alfa = (float) Math.toDegrees(Math.atan(p.y / p.x));
 		float beta = -(float) Math.toDegrees(Math.acos(p.z / r))+90;
 		
 		if(p.x<0 && p.y>0)
@@ -372,17 +353,7 @@ public class MyCamera {
 			alfa = 180+alfa;	
 		if(p.x>0 && p.y<0)
 			alfa = 360+alfa;
-		
-//		if(p.x<0 && p.y>0)
-//			alfa = 180+alfa;
-//		if(p.x<0 && p.y<0)
-//			alfa = 180+alfa;	
-//		if(p.x>0 && p.y<0)
-//			alfa = 360+alfa;
-		
-		
-	//	System.out.println((int)beta+"\t"+(int)alfa);
-		
+	
 		return new Vector3(r, beta, alfa);
 	}
 
