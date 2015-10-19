@@ -37,7 +37,7 @@ public class MyCamera {
 	float F = 50;
 
 	// szybkoœæ poruszania siê kamery
-	private float moveSpeed = 3f;
+	private float moveSpeed = 6f;
 
 	
 	public MyCamera() {
@@ -162,6 +162,12 @@ public class MyCamera {
 	public void handleInput(WorldRepository world, OrthographicCamera cam) {
 		
 
+		if (Gdx.input.isKeyPressed(Input.Keys.R)) {
+
+			cam.rotate(-angleZ, 0, 0, 1);
+			this.angleZ=0;
+		}
+		
 		if (Gdx.input.isKeyPressed(Input.Keys.E)) {
 
 			this.rotateW(-0.03f);
@@ -294,8 +300,11 @@ public class MyCamera {
 
 	public void moveRight() {
 
-		Vector3 dir = new Vector3(moveSpeed,angleZ,angleW+90);
+		Vector3 dir = new Vector3(moveSpeed,angleZ,angleW+90+angleH);
 		pos = StoC(dir).add(pos);
+		
+		
+		
 
 	}
 

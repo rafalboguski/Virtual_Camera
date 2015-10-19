@@ -101,11 +101,6 @@ public class VirtualCamera extends ApplicationAdapter {
 				shapeRenderer.circle(-myCam.pos.x, myCam.pos.z, 3);
 				shapeRenderer.line(-myCam.paneA.x, myCam.paneA.z, -myCam.paneB.x, myCam.paneB.z);
 			}
-
-			shapeRenderer.setColor(Color.GREEN);
-			shapeRenderer.circle(0, 0, 0);
-			shapeRenderer.rect(-W / 2, -H / 2, W, H);
-
 			shapeRenderer.end();
 		}
 		

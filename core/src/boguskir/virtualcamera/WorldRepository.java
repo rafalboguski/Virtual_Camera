@@ -29,6 +29,8 @@ public class WorldRepository{
 		
 		addBlock(new Vector3(150, -50, 320), 50,190,50);
 		
+		addBlock(new Vector3(100, -48, 360), -150,2,-250);
+		
 		
 	}
 
